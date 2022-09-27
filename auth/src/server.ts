@@ -1,11 +1,10 @@
-import express, { Express } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 
 import bodyParser from "body-parser";
-import errorhandler from "strong-error-handler";
 import cors from "cors";
+import createError from "http-errors";
 
 import authRoute from "./routes/authRoute";
-
 import database from "./db/database";
 
 class Server {
@@ -25,22 +24,25 @@ class Server {
     );
     this.app.use(bodyParser.json({ limit: "5mb" }));
     this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(
-      errorhandler({
-        debug: process.env.ENV !== "prod",
-        log: true,
-      }),
-    );
   };
 
   setupRoutes = () => {
-    this.app.get("/", (_req, res) => res.json({
-      message: "Hello world!"
-    }));
-    this.app.use(authRoute);
+    this.app.get("/", (_req: Request, res: Response) => res.send("Hello world!"));
+    this.app.use("/auth", authRoute);
+    this.app.use(async (_req: Request, _res: Response, next: NextFunction) => {
+      next(new createError.NotFound("Route not Found"));
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.app.use((err: any, _req: Request, res: Response) => {
+      res.status(err.status || 500).json({
+        status: false,
+        message: err.message,
+      });
+    });
   };
 
   listen = async (port: number) => {
+    // TODO: utilizar migration e seeds ao invés de data sync
     await database.sync({ force: true });
 
     this.app.listen(port, () => {
