@@ -2,17 +2,17 @@ import { Optional } from "sequelize";
 import bcrypt from "bcryptjs";
 import { Column, Table, Model, DataType, BeforeUpdate, BeforeCreate } from "sequelize-typescript";
 
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
   name: string;
   email: string;
   password: string;
 }
 
-type UserCreationAttributes = Optional<UserAttributes, "id">;
+export type UserCreationAttributes = Optional<UserAttributes, "id">;
 
 @Table
-export class User extends Model<UserAttributes, UserCreationAttributes> {
+class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column({
     type: DataType.BIGINT(),
     primaryKey: true,

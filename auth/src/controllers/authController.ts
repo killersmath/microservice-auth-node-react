@@ -1,98 +1,57 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 
-import jwt from "jsonwebtoken";
+import createError from "http-errors";
 
-import { TypedRequestBody } from "../helpers/typedExpress";
-import User from "../models/User";
-import jwtConfig from "../configs/jwtConfig";
+import { TypedRequestBody, WithStatus } from "../helpers/typedExpress";
+import AuthService from "../services/authService";
+import { SignUpBodyDTO, LogInBodyDTO } from "../dtos/authDTO";
 
-type ErrorResponse = {
-  error: string;
-};
-
-type TokenResponse = {
+type TokenResponse = WithStatus<{
   token: string;
   name: string;
   email: string;
-};
+}>;
 
-type SignUpBodyDTO = {
-  name: string;
-  email: string;
-  password: string;
-};
+export default class AuthController {
+  static register = async (req: TypedRequestBody<SignUpBodyDTO>, res: Response<TokenResponse>, next: NextFunction) => {
+    
+    try {
+      const { name, email, password } = req.body;
 
-export const signUpController = async (req: TypedRequestBody<SignUpBodyDTO>, res: Response<TokenResponse | ErrorResponse>) => {
-  const { name, email, password } = req.body;
-
-  try {
-    const createdUser = await User.create({ name, email, password });
-
-    const payload = {
-      id: createdUser.id,
-      email,
-      name,
-    };
-
-    const token = await jwt.sign(payload, jwtConfig.JWT_SECRET);
-
-    if (!token) {
-      res.status(500).json({
-        error: "Empty token",
+      const token = await AuthService.signUp({ name, email, password });
+  
+      res.status(200).json({
+        status: true,
+        message: "User created sucessfully",
+        data: {
+          token,
+          name,
+          email,
+        },
       });
-      return;
+    } catch (err) {
+      next(new createError.InternalServerError(err.message));
     }
+  };
+  
+  static login = async (req: TypedRequestBody<LogInBodyDTO>, res: Response<TokenResponse>, next: NextFunction) => {
+    try {
+      const { email, password } = req.body;
 
-    res.status(200).json({
-      token,
-      name,
-      email,
-    });
-  } catch (err) {
-    res.status(400).json({
-      error: err.message,
-    });
-  }
-};
+      const { token, name } = await AuthService.signIn({ email, password });
 
-type LogInBodyDTO = {
-  email: string;
-  password: string;
-};
-
-export const logInController = async (req: TypedRequestBody<LogInBodyDTO>, res: Response<TokenResponse | ErrorResponse>) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ where: { email } });
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  try {
-    if (!(await user.validPassword(password))) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    const payload = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    };
-
-    const token = jwt.sign(payload, jwtConfig.JWT_SECRET);
-
-    if (!token) {
-      res.status(500).json({
-        error: "Empty token",
+      res.status(200).json({
+        status: true,
+        message: "Account login successful",
+        data: {
+          token,
+          name: name,
+          email: email,
+        },
       });
-      return;
+    } catch (err) {
+      next(new createError.InternalServerError(err.message));
     }
-
-    res.status(200).json({ token, name: user.name, email });
-  } catch (err) {
-    res.status(400).json({
-      error: err.message,
-    });
-  }
-};
+  };
+  
+}

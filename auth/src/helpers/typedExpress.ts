@@ -2,14 +2,20 @@ import Express from "express";
 import { Query } from "express-serve-static-core";
 
 export interface TypedRequestBody<T> extends Express.Request {
-    body: T;
+  body: T;
 }
 
 export interface TypedRequestParams<T extends Query> extends Express.Request {
-    query: T
+  query: T;
 }
 
 export interface TypedRequest<T extends Query, U> extends Express.Request {
-    query: T,
-    body: U,
+  query: T;
+  body: U;
+}
+
+export interface WithStatus<T> {
+  status: boolean;
+  message: string;
+  data: T;
 }
