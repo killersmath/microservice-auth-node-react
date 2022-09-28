@@ -38,7 +38,7 @@ services:
       - postgres
     build: ./auth
     container_name: node_auth
-    restart: unless-stopped
+    restart: always
     environment: 
       DB_HOST: postgres
       DB_NAME: postgres
@@ -46,9 +46,20 @@ services:
     ports:
       - "3080:3000"
     volumes:
-      - ./auth:/usr/src/app
+      - ./auth:/usr/src/app/node-auth
     networks:
       - app-network
+  front-end:
+    build: ./todo-web
+    container_name: todo_web
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./todo-web:/usr/src/app/frontend
+    networks:
+      - app-network
+
 
 volumes:
   db-data:

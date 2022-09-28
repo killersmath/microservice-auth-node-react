@@ -1,0 +1,16 @@
+# Installs Node.js image
+FROM node:16.13.1-alpine3.14
+
+# sets the working directory for any RUN, CMD, COPY command
+WORKDIR /usr/src/app/frontend
+
+# Copies everything
+COPY . .
+
+# Installs all packages
+RUN npm install
+
+EXPOSE 3000
+
+# Runs the dev npm script to build & start the server
+CMD npm run dev
