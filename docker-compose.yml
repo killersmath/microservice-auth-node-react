@@ -25,9 +25,9 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: maxsuel@admin.com
       PGADMIN_DEFAULT_PASSWORD: secret
-      PGADMIN_LISTEN_PORT: 80
+      PGADMIN_LISTEN_PORT: 8080
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
@@ -49,7 +49,7 @@ services:
       - ./auth:/usr/src/app/node-auth
     networks:
       - app-network
-  front-end:
+  front_end:
     build: ./todo-web
     container_name: todo_web
     restart: always
@@ -57,6 +57,22 @@ services:
       - "3000:3000"
     volumes:
       - ./todo-web:/usr/src/app/frontend
+    networks:
+      - app-network
+
+  nginx:
+    depends_on: 
+      - front_end
+      - auth
+      - pgadmin
+    build: ./nginx
+    container_name: todo_nginx
+    restart: always
+    volumes:
+      - ./nginx/nginx-config:/etc/nginx/conf.d
+    ports:
+      - 80:80
+      - 443:443
     networks:
       - app-network
 
