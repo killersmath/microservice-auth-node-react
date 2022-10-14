@@ -26,7 +26,15 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Início",
+    label: "Painel",
+    href: "#",
+  },
+  {
+    label: "Tarefas",
+    href: "#",
+  },
+  {
+    label: "Configurações",
     href: "#",
   },
 ];
@@ -60,8 +68,9 @@ const WithSubnavigation: React.FC = () => {
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             fontFamily={"heading"}
             color={useColorModeValue("gray.800", "white")}
+            fontWeight={700}
           >
-            Logo
+            Trello Demo
           </Text>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
@@ -70,8 +79,17 @@ const WithSubnavigation: React.FC = () => {
         </Flex>
 
         <Stack flex={{ base: 1, md: 0 }} justify={"flex-end"} direction={"row"} spacing={6}>
-          <Button as={"a"} fontSize={"sm"} fontWeight={400} variant={"link"} href={"#"}>
-            Sign In
+          <Button
+            as={"a"}
+            fontSize={"sm"}
+            fontWeight={400}
+            variant={"link"}
+            href={"#"}
+            _hover={{
+              color: "gray.900",
+            }}
+          >
+            Perfil
           </Button>
           <Button
             as={"a"}
@@ -79,13 +97,13 @@ const WithSubnavigation: React.FC = () => {
             fontSize={"sm"}
             fontWeight={600}
             color={"white"}
-            bg={"pink.400"}
+            bg={"teal.400"}
             href={"#"}
             _hover={{
-              bg: "pink.300",
+              bg: "teal.600",
             }}
           >
-            Sign Up
+            Deslogar
           </Button>
         </Stack>
       </Flex>
@@ -114,9 +132,11 @@ const DesktopNav = () => {
                 fontSize={"sm"}
                 fontWeight={500}
                 color={linkColor}
+                transition={"border-bottom 250ms linear"}
                 _hover={{
                   textDecoration: "none",
                   color: linkHoverColor,
+                  borderBottom: "1px solid #000",
                 }}
               >
                 {navItem.label}
@@ -171,6 +191,7 @@ const MobileNav = () => {
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
+      <MobileNavItem label={"Deslogar"} href="#" />
     </Stack>
   );
 };
