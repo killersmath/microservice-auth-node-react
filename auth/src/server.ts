@@ -1,8 +1,7 @@
-import express, { Express, NextFunction, Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 
 import bodyParser from "body-parser";
 import cors from "cors";
-import createError from "http-errors";
 
 import authRoute from "./routes/authRoute";
 import database from "./db/database";
@@ -28,9 +27,12 @@ class Server {
 
   setupRoutes = () => {
     this.app.get("/", (_req: Request, res: Response) => res.send("Hello world!"));
-    this.app.use("/auth", authRoute);
-    this.app.use(async (_req: Request, _res: Response, next: NextFunction) => {
-      next(new createError.NotFound("Route not Found"));
+    this.app.use("/", authRoute);
+    this.app.use("*", async (_req: Request, res: Response) => {
+      res.status(404).json({
+        status: false,
+        message: "Route not found",
+      });
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.app.use((err: any, _req: Request, res: Response) => {
