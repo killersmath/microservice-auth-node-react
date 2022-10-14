@@ -23,7 +23,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"],
+      "@/*": ["src/*"],
       "@presentation/*": ["src/presentation/*"]
     }
   },

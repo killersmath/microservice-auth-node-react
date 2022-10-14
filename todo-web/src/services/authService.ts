@@ -1,0 +1,1 @@
+import authAdapter from "@/adapters/authAdapter";
