@@ -27,9 +27,10 @@ services:
       PGADMIN_DEFAULT_PASSWORD: secret
       PGADMIN_LISTEN_PORT: 8080
     ports:
-      - "8080:8080"
+      - "8090:8080"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
