@@ -11,7 +11,9 @@ export interface UserAttributes {
 
 export type UserCreationAttributes = Optional<UserAttributes, "id">;
 
-@Table
+@Table({
+  tableName: "user"
+})
 class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column({
     type: DataType.BIGINT(),
